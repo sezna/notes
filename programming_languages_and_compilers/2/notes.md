@@ -91,4 +91,43 @@ takeWhile (< 0) [1,2,3] == []
 **Product Types** are like tuples or records. How can we use _pairs_ and _records_ to represent product types?
 Two functions built into Haskell are `fst` and `snd` which get the first and second values out of pairs (only pairs).
 
+**tbd as lecture is broken**
+
+# 2.2.2
+## Sum Types
+### Disjoint Type Syntax
+A _sum type_ has three components: a name, a set of constructors, and arguments.
+```haskell
+data Contest = Rock | Paper | Scissors
+data Velocity = MetersPerSecond Float | FeetPerSecond Float
+data List = Cons a (List a) | Nil
+data Tree = Node a (Tree a) (Tree a) | Empty
+```
+
+A sum type is called a "sum type" because its domain is the sum of the domains of its argument types. A product type's domain is the cross product of the domains of its types. We can pattern match on units and do cool things like this:
+
+```haskell
+thrust (FeetPerSecond x) = x / 3.28
+thrust (MetersPerSecond x) = x
+```
+
+```haskell
+data List = Cons Int List | Nil
+	deriving Show
+insertSorted a Nil = Cons a Nil
+insertSorted a (Cons b bs)
+	| a < b = Cons a (Cons b bs)
+	| otherwise = Cons b (insertSorted a bs) 
+```
+
+## The `Maybe` Type
+
+```haskell
+data Maybe a = Just a | Nothing
+
+getItem [] = Nothing
+getItem key xs = xs!!key
+
+```
+
 
