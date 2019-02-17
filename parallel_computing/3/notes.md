@@ -80,7 +80,7 @@ Real cache coherence hardware is more complicated than what we have discussed, t
 **Snoopy Cache Controllers** basically watch the shared memory bus and snoop what the other caches are doing, and keep things coherent. On some modern machines, there are too many cores so a snoopy controller is not valid. We need to instead use a directory based protocol, and store the state of cache lines in a directory to be checked later. In the **MSI Protocol**, a cache line is either:
 * Modified: meaning it is changed but has yet to be written to DRAM -- prevent other cores from reading DRAM value.
 * Shared: I have a copy from DRAM, unmodified, and others also have unmodified copies.
-* Invalud: I have a copy, but another processor's cache has a more recent version.
+* Invalid: I have a copy, but another processor's cache has a more recent version.
 
 Modified is sometimes called **dirty**, which is sort of a good thing, it means the most up-to-date copy. There is an alternative to MSI, known as the **Illinois Protocol** or **MESI Protocol**. In MESI, each cache line is either:
 
