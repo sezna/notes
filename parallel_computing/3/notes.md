@@ -109,3 +109,5 @@ The time a program runs before switching is called a **time quanta** and is ofte
 See 5:20 in 3.2.2 for an example with two cores and three processes. 
 
 To program with shared address space, we can't use two processes. Every process has its own address space. We need something smaller than a process: we use **LWP** (light-weight processes), **pthread** (POSIX thread), **Windows threads**, **fibers**, etc. There are many names, but they're basically threads. Threads are like processes but share address space. They're visible to the OS for scheduling.
+
+For optimal performance, you don't want any more threads than cores. If you have more threads than cores, you risk wasting too many resources on context switching. 
