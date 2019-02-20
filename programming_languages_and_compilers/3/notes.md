@@ -119,3 +119,59 @@ eval (BoolOpExp op e1 e2) env =
 	    Just f = lookup op boolOps
 	in liftBoolOp f v1 v2
 ```
+
+## Local Variables
+
+We want to use `let` to define local variables.
+```haskell
+3 + let x = 2 + 3 in x * x end 
+```
+
+We won't use indentation here, and we need two new expression `Exp`constructors.
+
+```haskell
+data Exp = VarExp String
+	 | LetExp String Exp Exp -- String is var name, first exp is the variable value, the second exp is the body of the let
+	 | -- stuff from before
+```
+
+For variables, we look them up in the environment.
+```haskell
+eval (VarExp var) env = 
+	case lookup var env of 
+		Just val -> val
+		Nothing -> IntVal 0 -- return 0 if var not found. Error handling comes later.
+
+eval (LetExp var e1 e2) env =
+	let v1 = eval e1 env
+	  in eval e2 (insert var v1 env)
+
+```
+Now, the `insert var v1 env` pushes a value onto the stack, behaviorally. 
+
+# 3.1.3
+## If Expressions
+This time we will add `if` expressions and closures. Note that what we have done does not actually push a variable onto a stack and remove it, but it behaves very similarly. 
+
+For `if` expressions, we of course need another `Exp`.
+```haskell
+data Exp = IfExp e1 e2 e3
+	 | ... other Exps
+
+```
+And the eval:
+```haskell
+eval (IfExp e1 e2 e3) env = 
+	let v1 = eval e1 env
+		in case v1 of
+			BoolVal True -> eval e2 env
+			_            -> eval e3 env
+
+```
+## Functions (Lambdas/Closures)
+```haskell
+(\x -> x + 10) 20
+```
+A lambda has a parameter (`x`), a function body (`x + 10`), and an argument (`20`).
+
+# TODO come back to closures! 3.1.3!
