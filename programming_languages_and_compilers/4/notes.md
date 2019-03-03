@@ -52,3 +52,102 @@ Here are some famous functions:
 ```
 
 In syntax trees, an `@` represents function application. A `\` creates a **binding**, and arguments internal to the lambda are bound to that lambda. A **free variable** is a variable that is not bound in its syntax tree. 
+
+# 4.2.2
+* Performa a beta-rreduction
+* Detect alpha-capture and use alpha-renaming to avoid it.
+* Normalize any given lambda-calculus turm.
+
+Examples:
+```haskell
+(\x.x) a -- the identity function:
+     @
+  \x   a  -- <beta reduction> -> a  
+   x   
+```
+
+```haskell
+(\x.x x) a -- lambda x, x applied to x
+     @
+  \x   a -- <beta reduction> -> @
+   @                          a   a
+ x  x
+```
+
+```haskell
+(\x.y x) a -- lambda x, y applied to x
+     @
+  \x   a -- <beta reduction> -> @
+   @                          y   a
+ y   x
+```
+
+```haskell
+(\x.\a.x) a -- must change parameter to a' (a prime) to avoid naming conflict:
+(\x.\a'.x) a  
+    @ 
+ \x   a
+ \a        -- <beta reduction> -> \a'
+  x                                a
+```
+
+When you have conflicting variable names, you walk up the tree and bind it to the first thing it sees (most local)
+
+```haskell
+(\x.\x.x) a
+
+	   @
+	\x   a              -- <beta reduction> ---> \x
+        \x --------- x variable is scoped to here     x
+         x
+```
+
+
+# 4.2.3
+## Evaluation Order
+* If there is more than one beta reduction, which one do you do first?
+* When is it acceptable to leave a beta reduction unreduced?
+
+### Applicative Order
+* **Applicative Order** is like call-by-value. Start with the left-most outer-most application, then evaluate the argument before doing the beta reduction. We prioritize reducing arguments.
+* **Normal Order** is like call-by-name, what the C preprocessor uses. Left-most outer-most again, but do the beta reduction immediately. 
+
+Applicative order _usually_ has fewer reductions. If the lambda calculus expression terminates, then normal and applicative orders produce the same result. 
+
+### Weak Head Normal Form
+If the root node of a syntax tree is a lambda, then everything inside is the body of the function. This is **weak head normal form**. This form closely resembles what "real programming languages" do. Don't evaluate inside the body of a function until you know all of the values and the function is called.
+
+### Normal Form
+In normal form, if the outermost node is a lambda, you keep descending into the body. You do get maximally reduced functions, expressions are smaller, sometimes things are incorrect though via alpha capturing.
+
+# 4.2.4
+## Church Numerals
+We will implement integers and booleans with lambda calculus, as well as defining:
+* inc, plus, times
+* and, or, not, if
+We can then extend this to represent other types.
+
+A number is an intangible thought, and a numeral is a representation of this intangible number.
+
+```haskell
+f0 = \f -> \x -> x
+f1 = \f -> \x -> f x
+f2 = \f -> \x -> f $ f x
+f2 = \f -> \x -> f $ f $ f x
+-- ...etc
+```
+For booleans, we represent them as such:
+```haskell
+true = \ a b -> a
+false = \ a b -> b
+```
+We just choose an option, given two options. Now, how would a logical `or` work?
+
+```haskell
+or = \ ca cb -> x true y
+and = \x y -> x y false
+cif = \c t e -> c t e
+```
+Wat. (?)
+
+

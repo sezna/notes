@@ -124,3 +124,22 @@ In summary, there are six ways to share data among threads:
 The docs:
 http://openmp.org/specifications
 
+# 4.2.1 Loop Schedules
+The OpenMP runtime is free to assign any iteration to any thread. The normal default is static, it assigns a block of contiguous iterations to each thread equally. 800 iterations, 8 threads, so thread 0 runs iteration 0-99, thread 1 runs iteration 100-199, etc. This can often help with spatial locality as contiguous iterations access contiguous memory locations.
+
+The programmer can control this scheduling, though. If the work per iteration is imbalanced, you can balance work per thread. In a **dynamic schedule**, a thread just gets the next iteration when it finishes one. A thread just asks for more work when it is ready. In order to improve spatial locality, a thread can come back and ask for a chunk of iterations.
+```c
+schedule (kind[, chunk])
+```
+kind can be:
+* static
+* dynamic
+* guided (variant of dynamic -- chunks decrease as you go along until you hit the specified chunk value)
+* runtime (programmer sets schedule at runtime using `omp_set_schedule(..)`
+* auto (let the compiler/runtime decide the schedule)
+
+## Tradeoffs in Static vs. Dynamic Scheduling
+* Static has lower synchronization overhead, better spatial locality, but cannot deal with imbalances in work load among iterations.
+* Dynamic scheduling balances load well, but has a higher synchronization overhead. Threads must coordinate often to assign iterations, and spatial locality can be harmed.
+
+
