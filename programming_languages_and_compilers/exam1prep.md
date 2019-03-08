@@ -5,3 +5,5 @@
 * Fill in the "objectives" lists
 * Building syntax trees (4.2.1 lambda calculus)
 * Review beta reductions
+* Understand the y combinator
+* Create expressions and CPS them
