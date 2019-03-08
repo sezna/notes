@@ -150,4 +150,26 @@ cif = \c t e -> c t e
 ```
 Wat. (?)
 
+# 4.2.5
+## The Y Combinator
+The **y combinator** is a way of implementing recursion in pure lambda calculus. We will see how it uses self application to allow funcitons to call themselves.
+
+How would we implement the admittedly dumb function `f n = f n + 1` in lambda calculus?
+The basic outline would be `\n (f (inc n ))`
+
+Consider the operation of church numerals:
+
+```haskell
+f(f(f(f x))) = 4
+f(f(f(f(f x)))) = 5
+```
+
+We want a Church "infinity" to implement recursion. 
+
+```haskell
+(f_inf f) x -> f (f_inf f) x
+```
+This takes a function and a function and applies it to itself. But how can we stop the recursion? How can we implement a base case?
+
+A combinator is a higher order function that produces its result only through function application.
 
