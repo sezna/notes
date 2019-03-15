@@ -175,3 +175,80 @@ class SPSCQueue {
 # 8.1.4
 ## Message Passsing in Distributed Systems
 A shared memory machine is basically a bunch of processors attached to the same memory. 
+
+**MPI**, or **message passing interface**, is a standard to exchange messages via send/receive calls. It's like a process mailing data to another process. With typical clusters today, computers/nodes are connected with either eithernet or a sophisticated network card. Messages are sent as packets over the network. Another option is co-processors, which are processors that have Network Inteface Cards (**NIC**), whose only job is handling the logic/work of sending/receiving messages. Receives are blocking, and will halt execution until they arrive. Basic MPI calls:
+* `send(int process, int tag, int size, char*  buf)`
+* `recv(int process, int tag, int size, char* buf) `
+* `tag` and `proc` can be wildcarded in a `recv`: `recv(ANY,ANY, 1000, &buf);`
+
+Calculating pi with message passing:
+
+```c++
+int count, c1, i;
+main() {
+	Seed s = makeSeed(myProcessor);
+	for (i = 0; i < 100000/P; i++) {
+		x = random(s);
+		y = random(s);
+		if (x*x + y*y < 1.0) {
+			count++;
+		}
+	}
+
+	send(0, 1, 4, &count);
+	if (myProcessorNum() == 0) {
+		globalCount = 0.0;
+		for (i = 0; i < maxProcessors(); i++) {
+			recv(i, 1, 4, &c);
+			globalCount += c;
+		}
+		printf("pi=%f\n", 4*globalCount/100000);
+	}	
+}
+
+```
+
+### Collective Calls
+Message passing is often, but not always, used for **SPMD**, or **Single Process Multiple Data** style programming. All processors execute almost the same program and same steps, but not in lockstep. **Collective calls** include global reductions like max and sum, or `syncBroadcast` which broadcasts. 
+
+# 8.1.5
+## Basic MPI
+```c++
+#include "mpi.h"
+#include<stdio.h>
+int main(int argc, char* argv) {
+	int rank, size;
+	MPI_Init(&argc, &argv);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &soze);
+	printf("hello world: I'm %d of %d", rank, size);
+	MPI_Finalize();
+	return 0;
+}
+```
+
+The parameters of a basic `MPI_Send` are as follows:
+
+`MPI_Send(buf, count, datatype, dest, tag, comm);`
+* `buf`: address of send buffer
+* `count`: number of elements
+* `datatype`: data type of send buffer elements
+* `dest`: process id of destination process
+* `tag` message tag (ignore for now)
+* `comm`: communicator (ignore for now)
+
+The parameters of a basic `MPI_Recv` are as follows:
+
+`MPI_Recv(buf, count, datatype, source, tag, comm, &status);`
+* `buf`: address of receive buffer
+* `count`: size of receive buffer in elements
+* `datatype`: data type of receive buffer elements
+* `dest`: process id or `MPI_ANY_SOURCE`
+* `tag` message tag (ignore for now)
+* `comm`: communicator (ignore for now)
+* `status`: status object
+
+# 8.1.6
+## Basic MPI
+### Example: Jacobi Relaxation
+
