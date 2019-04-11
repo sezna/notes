@@ -145,3 +145,36 @@ For a more complicated example, see 7.1.2 at around six minutes.
 __How do I know when I'm done with a symbol?__
 
 A follow set is a list of symbols that occur __after__ you have completed parsing the non-terminal. This is __not__ a part of the parse tree for the given non-terminal. 
+
+There is an algorithm for calculating a follow set. 
+* Put `$` in `FOLLOW(S)`, where `S` is the start symbol. `$` represents the end of input.
+* If there is a production `X -> alpha Y beta` then add `FIRST(beta)` (but not `epsilon`) to `FOLLOW(Y)`.
+* If there is a production `X -> alpha Y`, or if there is a production `X -> alpha Y beta`, where `epsilon is in FIRST(beta)` then add `FOLLOW(X)` to `FOLLOW(Y)`.
+
+For the second bullet point - whatever comes __after__ `Y`, or __follows__ `Y`, will be in `FIRST(beta)`, so we add it to the follow set of Y. For the third bullet point, if epsilon is in the first set of `beta`, or if nothing follows Y in general. See 2:34 in 7.1.3 for examples.
+
+# 7.2.1
+## Regular Languages
+(lots omitted due to Alex's familiarity with regular languages)
+Regular exp syntax options:
+
+* A   -- match just A
+* A\* -- any amount of copies of A
+* A+  -- one or more copies of A 
+* A|B -- A or B
+
+Examples:
+* ab\*a -- aa, aba, abbba
+* (0|1)\* -- any binary number or epsilon
+* (0|1)+ -- any binary number
+
+Notational shortcuts:
+* [Xa-z] -- matches X and then any letter from a to z
+
+Regular expressions are greedy. They are well suited for individual words, but not more complicated operations. You cannot count very well, you need a state for every value to count, you cannot match an infinite number of primes, you cannot match things like nested comments in code.
+
+# 7.2.2
+## Thompsons Construction
+A quick refresher: a right-linear grammar is one in which every production has the form `A -> x`, `A -> xB`, or `A -> B`. That means it is context free. It has at most one nonterminal symbol on the right-hand side. It has one nonterminal for each state, and one terminal for each production. 
+
+
